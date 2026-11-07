@@ -6,7 +6,11 @@
     {"week": 1, "title": "국뽕 감 테스트",
      "line": "한국 통계 10개 주제와 대한민국 상식 1개 주제, 60문항으로 숫자 감각을 재고 5개 이상 풀면 S~F 대한민국 등급을 매기는 퀴즈",
      "judgment": "World Bank · OWID · FRED · 국토교통부 공개 원본에서 스크립트로만 계산했다. 같은 값이 여러 해에 나오거나 필요한 연도가 비어 있거나 반올림하면 0이 되는 등 기준이 애매한 문항은 임의로 정하지 않고 멈춘 뒤 기준을 다시 정했고, 출처가 다른 통계는 섞지 않았다.",
-     "ai": ["Claude Code"], "url": "https://gam-test-zeta.vercel.app", "img": "img/w1-gukppong.png"}
+     "ai": ["Claude Code"], "url": "https://gam-test-zeta.vercel.app", "img": "img/w1-gukppong.png"},
+    {"week": 2, "title": "MEDI TASK — 병의원 마케팅 업무 AI 분류기",
+     "line": "병의원 마케팅 업무 요청을 입력하면 AI가 업무 유형과 긴급도, 판단 근거를 분류합니다. 분류 기준과 평가 문장을 직접 설계하고 실제 Gemini API를 연동했습니다.",
+     "judgment": "직접 만든 30개 평가 문장으로 규칙 기반과 Gemini를 비교한 결과, 업무 유형 정확도는 83.3%에서 90.0%, 긴급도 정확도는 76.7%에서 90.0%, 완전 일치율은 60.0%에서 80.0%로 개선됐다. 다만 30개 문장만으로 AI의 우수성을 일반화할 수 없으며, 제안형 문장과 업무 유형의 경계에서 오분류가 발생한다는 한계도 확인했다.",
+     "ai": ["Claude Code", "Gemini", "Google Switch"], "url": "https://my-classifier-weld.vercel.app/#classify", "img": "img/w2-meditask.png"}
   ],
   "proposal": null
 }
