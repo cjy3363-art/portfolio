@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>PriceGuard 사용 가이드</title>
+<meta name="description" content="PriceGuard 사용 가이드 — 엑셀 가격표 업로드부터 오류 검증, 정리본 다운로드까지">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<link rel="stylesheet" href="guide.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <img class="logo" src="img/logo.png" alt="PriceGuard" width="160" height="40">
+    <h1>PriceGuard 사용 가이드</h1>
+    <p class="subtitle">엑셀 가격표 업로드부터 오류 검증, 정리본 다운로드까지</p>
+    <p>PriceGuard는 병의원 시술 가격표의 형식 오류와 중복 데이터를 검사하고, 자동 수정할 수 있는 항목과 사람이 확인해야 하는 항목을 구분하는 웹 기반 검증 도구입니다.</p>
+    <p>별도 프로그램 설치 없이 브라우저에서 사용할 수 있으며, 업로드한 엑셀 파일의 내용은 브라우저 내부에서 처리됩니다.</p>
+    <p>현재는 목업 데이터 기반으로 개발된 프로토타입입니다.</p>
+    <ul class="chips">
+      <li>설치 필요 없음</li>
+      <li>엑셀 내용은 브라우저 안에서 처리</li>
+      <li>정제 규칙 20개</li>
+      <li>목업 데이터 기반 프로토타입</li>
+    </ul>
+    <a class="cta" href="https://priceguard-cjy3363-9965.vercel.app" target="_blank" rel="noopener">PriceGuard 열기 →</a>
+    <span class="cta-sub">https://priceguard-cjy3363-9965.vercel.app · 새 탭에서 열립니다</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="목차">
+    <strong>목차</strong>
+    <ol>
+      <li><a href="#s1">① PriceGuard란?</a></li>
+      <li><a href="#s2">② 시작 전에 확인할 것</a></li>
+      <li><a href="#s3">③ 서비스 접속하기</a></li>
+      <li><a href="#s4">④ 화면 구성 알아보기</a></li>
+      <li><a href="#s5">⑤ 엑셀 파일 올리기</a></li>
+      <li><a href="#s6">⑥ 대시보드 확인하기</a></li>
+      <li><a href="#s7">⑦ 데이터 검증 화면 사용하기</a></li>
+      <li><a href="#s8">⑧ 정제 규칙 이해하기</a></li>
+      <li><a href="#s9">⑨ 변경 기록 확인하기</a></li>
+      <li><a href="#s10">⑩ 정리본 다운로드 · 다시 올리기</a></li>
+      <li><a href="#s11">⑪ 정답 대조 (선택)</a></li>
+      <li><a href="#s12">⑫ 내 파일이 밖으로 나가지 않는 이유</a></li>
+      <li><a href="#s13">⑬ 자주 발생하는 문제</a></li>
+      <li class="sep" aria-hidden="true"></li>
+      <li><a href="#appA">부록 A. 내 컴퓨터에서 실행하기</a></li>
+      <li><a href="#appB">부록 B. 용어 풀이</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- ① -->
+  <section class="step" id="s1">
+    <h2><span class="num">1</span>PriceGuard란?</h2>
+    <h3>왜 만들었나</h3>
+    <p>시술 가격표는 시술코드 · 시술명 · 부위 · 횟수 · 가격 · 이벤트 기간처럼 칸이 많습니다. 여러 사람이 고치고 합치다 보면 다음 같은 문제가 생깁니다.</p>
+    <ul>
+      <li>같은 값이 다르게 적힘 — <code>500,000원</code>(글자) 과 <code>500000</code>(숫자), <code>2026.10.14</code> 와 <code>2026-10-14</code>, <code>5번</code> 과 <code>5회</code></li>
+      <li>같은 행이 두 번 들어감</li>
+      <li>값이 빠짐 (빈칸)</li>
+      <li>이벤트가격이 정상가격보다 비싸거나, 종료일이 시작일보다 빠름</li>
+    </ul>
+    <p>PriceGuard는 이런 문제를 정해진 <b>정제 규칙 20개</b>로 한 번에 검사합니다.</p>
+
+    <h3>자동 수정과 검토 필요의 차이</h3>
+    <div class="table-wrap"><table>
+      <tr><th>구분</th><th>무엇을 하나</th><th>예</th></tr>
+      <tr><td><span class="tag auto">자동 수정</span></td><td>결과가 확실한 <b>형식</b>만 고칩니다. 고친 내용은 모두 변경 기록에 남습니다.</td><td><code>500,000원</code> → <code>500000</code>, <code>2026.10.14</code> → <code>2026-10-14</code>, <code>5번</code> → <code>5회</code>, 완전히 같은 중복 행 삭제</td></tr>
+      <tr><td><span class="tag review">검토 필요</span></td><td>틀린 것 같지만 <b>정답을 알 수 없는 값</b>은 바꾸지 않고, 이유만 표시합니다. 사람이 확인해서 고칩니다.</td><td>빈칸, 0원·음수 가격, 이벤트가 &gt; 정상가, 종료일 &lt; 시작일, 너무 튀는 가격</td></tr>
+      <tr><td><span class="tag conflict">충돌</span></td><td>같은 시술코드인데 내용이 다른 행. 어느 쪽이 맞는지 알 수 없어 <b>두 행 모두 남기고</b> 표시합니다.</td><td>같은 코드에 정상가격 220,000 / 260,000</td></tr>
+    </table></div>
+
+    <h3>지금의 한계</h3>
+    <div class="box warn">
+      <b>프로토타입입니다</b>
+      <ul>
+        <li>오류를 미리 넣어 둔 <b>목업(가상) 데이터 한 파일</b>로 만들고 검증했습니다. 실제 병의원 가격표에서도 같은 결과가 나온다고 보장하지 않습니다.</li>
+        <li>정해진 양식(필수 컬럼 10개)의 <b>병의원 시술 가격표 전용</b>입니다. 다른 표에는 쓸 수 없습니다.</li>
+        <li>정제 규칙은 고정되어 있고, 화면에서 규칙을 바꿀 수 없습니다.</li>
+        <li>가격 이상치 기준은 목업 데이터에 맞춘 <b>임시 기준</b>입니다.</li>
+        <li>최종 판단은 사람이 합니다. «검토 필요»로 남은 값은 직접 확인해야 합니다.</li>
+      </ul>
+    </div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ② -->
+  <section class="step" id="s2">
+    <h2><span class="num">2</span>시작 전에 확인할 것</h2>
+    <p>PriceGuard는 아래 조건에 맞는 엑셀만 읽습니다. 올리기 전에 내 파일을 먼저 확인하세요.</p>
+    <div class="table-wrap"><table>
+      <tr><th>조건</th><th>내용</th></tr>
+      <tr><td>파일 형식</td><td><code>.xlsx</code> · <code>.xls</code> · <code>.xlsm</code> (CSV는 올릴 수 없습니다)</td></tr>
+      <tr><td>시트</td><td><b>첫 번째 시트</b>만 검사합니다. 시트가 여러 개면 화면에 안내가 나옵니다.</td></tr>
+      <tr><td>머리글</td><td><b>1행</b>에 칸 이름이 있어야 합니다. 데이터는 2행부터입니다.</td></tr>
+      <tr><td>필수 컬럼</td><td>아래 <b>10개</b>가 모두 있어야 합니다. 칸 순서는 달라도 됩니다.</td></tr>
+      <tr><td>컬럼 이름</td><td>글자가 <b>정확히</b> 같아야 합니다. (앞뒤 공백은 괜찮지만, 중간 띄어쓰기나 글자가 다르면 못 찾습니다)</td></tr>
+    </table></div>
+
+    <h3>필수 컬럼 10개</h3>
+    <div class="table-wrap"><table>
+      <tr><th class="n">#</th><th>컬럼 이름</th><th>예시 값 (목업 데이터 첫 행)</th></tr>
+      <tr><td class="n">1</td><td><code>시술코드</code></td><td>BTX-001</td></tr>
+      <tr><td class="n">2</td><td><code>진료과목</code></td><td>피부과</td></tr>
+      <tr><td class="n">3</td><td><code>시술분류</code></td><td>보톡스</td></tr>
+      <tr><td class="n">4</td><td><code>시술명</code></td><td>국산 보톡스 이마</td></tr>
+      <tr><td class="n">5</td><td><code>시술부위</code></td><td>이마</td></tr>
+      <tr><td class="n">6</td><td><code>시술횟수</code></td><td>1회</td></tr>
+      <tr><td class="n">7</td><td><code>정상가격</code></td><td>49000</td></tr>
+      <tr><td class="n">8</td><td><code>이벤트가격</code></td><td>39000</td></tr>
+      <tr><td class="n">9</td><td><code>이벤트시작일</code></td><td>2026-06-01</td></tr>
+      <tr><td class="n">10</td><td><code>이벤트종료일</code></td><td>2026-06-21</td></tr>
+    </table></div>
+    <div class="box note">
+      <b>참고</b>
+      <ul>
+        <li>위 10개 말고 다른 칸이 더 있어도 됩니다. 그 칸은 검사하지 않고, 화면에 «규칙에 없는 컬럼은 검사하지 않습니다» 안내가 나옵니다.</li>
+        <li>완전히 빈 행은 데이터로 세지 않습니다.</li>
+      </ul>
+    </div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ③ -->
+  <section class="step" id="s3">
+    <h2><span class="num">3</span>서비스 접속하기</h2>
+    <p><b>Python이나 별도 프로그램을 설치할 필요가 없습니다.</b> 브라우저에서 아래 주소를 열면 끝입니다.</p>
+    <p><a class="cta" href="https://priceguard-cjy3363-9965.vercel.app" target="_blank" rel="noopener">https://priceguard-cjy3363-9965.vercel.app</a></p>
+    <div class="box ok">
+      <b>이렇게 보이면 성공</b>
+      <ul>
+        <li>브라우저 탭 이름: <b>PriceGuard | 병의원 시술 가격표 검증</b></li>
+        <li>왼쪽 위에 PriceGuard 로고, 가운데에 «가격표 업로드» 화면</li>
+        <li>오른쪽 위 배지: <b>정제 규칙 20개 준비됨</b></li>
+      </ul>
+    </div>
+    <figure>
+      <a href="img/01-upload.png" target="_blank" rel="noopener"><img src="img/01-upload.png" alt="처음 접속했을 때의 파일 업로드 화면" width="1280" height="800" loading="lazy"></a>
+      <figcaption>처음 접속하면 「파일 업로드」 화면이 열립니다. 오른쪽 위에 «정제 규칙 20개 준비됨»이 보입니다.</figcaption>
+    </figure>
+    <div class="box unverified"><b><span class="tag unv">미검증</span> 브라우저</b>
+      <p>Windows의 Chrome에서 확인했습니다. Edge · Safari · Firefox, Mac에서는 직접 시험하지 않았습니다.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ④ -->
+  <section class="step" id="s4">
+    <h2><span class="num">4</span>화면 구성 알아보기</h2>
+    <p>왼쪽 메뉴에 6개 화면이 있습니다. 휴대폰에서는 왼쪽 위 <span class="btn-name">☰</span> 단추를 눌러 메뉴를 엽니다.</p>
+    <div class="table-wrap"><table>
+      <tr><th>메뉴</th><th>하는 일</th></tr>
+      <tr><td><b>대시보드</b></td><td>정제 결과를 한눈에 요약합니다. 자동 수정 · 검토 필요 · 중복 제거 수와 오류 유형별 건수.</td></tr>
+      <tr><td><b>파일 업로드</b></td><td>엑셀 파일을 올리는 곳. 처음 접속하면 이 화면이 열립니다.</td></tr>
+      <tr><td><b>데이터 검증</b></td><td>원본과 정리본을 표로 비교하고, 행마다 검토 사유를 봅니다.</td></tr>
+      <tr><td><b>정제 규칙</b></td><td>규칙 20개의 내용과 이유, 실제로 적용된 건수를 봅니다.</td></tr>
+      <tr><td><b>변경 기록</b></td><td>무엇이 어떻게 바뀌었는지 기록을 보고, 엑셀 파일 3종을 내려받습니다.</td></tr>
+      <tr><td><b>정답 대조</b></td><td>(선택) 정답 CSV와 정리본을 비교합니다.</td></tr>
+    </table></div>
+    <p>화면 위쪽에는 항상 규칙 상태 배지와 <span class="btn-name">정리본 엑셀 다운로드</span> 버튼이 있습니다. 파일을 올리기 전에는 다운로드 버튼이 흐리게 꺼져 있습니다. 왼쪽 메뉴 아래에는 지금 올린 파일 이름과 상태(<b>파일 대기 중</b> / <b>정제 완료</b>)가 나옵니다.</p>
+    <div class="fig-row">
+      <figure class="phone">
+        <a href="img/08-mobile.png" target="_blank" rel="noopener"><img src="img/08-mobile.png" alt="휴대폰 화면의 대시보드" width="780" height="1688" loading="lazy"></a>
+        <figcaption>휴대폰(390px) 화면</figcaption>
+      </figure>
+      <figure class="phone">
+        <a href="img/08b-mobile-menu.png" target="_blank" rel="noopener"><img src="img/08b-mobile-menu.png" alt="휴대폰에서 메뉴를 연 모습" width="780" height="1688" loading="lazy"></a>
+        <figcaption>☰ 를 눌러 메뉴를 연 모습</figcaption>
+      </figure>
+    </div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑤ -->
+  <section class="step" id="s5">
+    <h2><span class="num">5</span>엑셀 파일 올리기</h2>
+    <ol class="steps">
+      <li>왼쪽 메뉴에서 <b>파일 업로드</b>를 누릅니다.</li>
+      <li>엑셀 파일을 «엑셀 파일을 여기에 끌어다 놓으세요» 상자에 <b>끌어다 놓거나</b>, <span class="btn-name">파일 선택</span> 을 눌러 고릅니다.</li>
+      <li><b>끝입니다.</b> 별도의 «정리» 버튼은 없습니다. 파일을 올리면 정제가 자동으로 진행되고 <b>대시보드</b>로 이동합니다.</li>
+    </ol>
+    <div class="box ok">
+      <b>이렇게 되면 성공</b>
+      <ul>
+        <li>화면이 「대시보드」로 바뀌고, 파일 이름 옆에 <b>검증 완료</b>가 보입니다.</li>
+        <li>왼쪽 메뉴 아래가 <b>정제 완료</b>로 바뀝니다.</li>
+        <li>「파일 업로드」 화면으로 돌아가면 파일 정보 줄(시트 · 데이터 행 · 컬럼 수 · «정제 규칙 20개 적용 완료»)과 <span class="btn-name">다른 파일 선택</span> <span class="btn-name">결과 보기 →</span> 버튼이 보입니다.</li>
+      </ul>
+    </div>
+    <figure>
+      <a href="img/02-upload-done.png" target="_blank" rel="noopener"><img src="img/02-upload-done.png" alt="파일을 올린 뒤 파일 정보 줄" width="912" height="488" loading="lazy"></a>
+      <figcaption>올린 뒤 「파일 업로드」 화면 — 아래쪽에 파일 정보 줄이 생깁니다.</figcaption>
+    </figure>
+    <div class="box warn"><b>주의</b>
+      <ul>
+        <li>새 파일을 올리면 이전 결과(정답 대조 결과 포함)는 새 결과로 바뀝니다. 필요한 결과는 먼저 내려받으세요.</li>
+        <li>페이지를 새로 고치거나 닫으면 결과가 사라집니다. 서버에 저장하지 않기 때문입니다.</li>
+      </ul></div>
+    <div class="box unverified"><b><span class="tag unv">미검증</span></b>
+      <p>끌어다 놓기는 실제 마우스로는 시험하지 않았습니다(파일 선택 방식으로 확인). <code>.xls</code> · <code>.xlsm</code>은 받도록 되어 있지만 실제로 시험한 형식은 <code>.xlsx</code>입니다.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑥ -->
+  <section class="step" id="s6">
+    <h2><span class="num">6</span>대시보드 확인하기</h2>
+    <figure>
+      <a href="img/03-dashboard.png" target="_blank" rel="noopener"><img src="img/03-dashboard.png" alt="대시보드 화면" width="1280" height="800" loading="lazy"></a>
+      <figcaption>대시보드 — 목업 데이터를 올린 결과</figcaption>
+    </figure>
+    <h3>정제 결과 요약 (위쪽 카드 4개)</h3>
+    <div class="table-wrap"><table>
+      <tr><th>카드</th><th>뜻</th><th class="n">목업 데이터 예시</th></tr>
+      <tr><td>전체 데이터</td><td>원본 행 수와 정리 후 행 수</td><td class="n">210행 → 정리 후 207행</td></tr>
+      <tr><td>자동 수정</td><td>형식을 고친 칸 수</td><td class="n">20칸</td></tr>
+      <tr><td>검토 필요</td><td>사람이 확인해야 하는 행 수 (충돌 포함)</td><td class="n">49행 (충돌 12행 포함)</td></tr>
+      <tr><td>중복 제거</td><td>완전히 같아서 지운 행 수</td><td class="n">3행</td></tr>
+    </table></div>
+    <div class="box note"><b>예시 수치는 목업 데이터 기준입니다</b><p>위 숫자는 가이드 작성에 쓴 목업(가상) 파일의 결과입니다. 내 파일에서는 다른 숫자가 나옵니다.</p></div>
+
+    <h3>가격 이상치 임시 기준 안내 (노란 상자)</h3>
+    <p>대시보드에는 항상 «가격 이상치 기준(REV-06)은 임시 기준입니다…» 안내가 나옵니다. 지금 기준은 <b>이벤트가격 ÷ 정상가격 비율이 0.1 미만 또는 7 이상</b>이며, 목업 데이터에 맞춘 값이라 실제 데이터에는 별도 검증과 조정이 필요합니다.</p>
+
+    <h3>오류 유형 현황 · 검토 권장 항목</h3>
+    <figure>
+      <a href="img/03b-dashboard-types.png" target="_blank" rel="noopener"><img src="img/03b-dashboard-types.png" alt="오류 유형 현황과 검토 권장 항목" width="945" height="900" loading="lazy"></a>
+      <figcaption>규칙별 발생 건수(왼쪽 파란 막대: 자동 수정, 오른쪽 빨간 막대: 검토 표시)와 검토 권장 항목</figcaption>
+    </figure>
+    <ul>
+      <li><b>오류 유형 현황</b> — 규칙마다 몇 칸(행)에 적용됐는지 막대로 보여 줍니다.</li>
+      <li><b>검토 권장 항목</b> — 충돌이거나 검토 사유가 많은 행부터 5개를 보여 줍니다. 항목을 누르면 「데이터 검증」 화면의 해당 행 상세로 이동합니다. <span class="btn-name">검토 항목 확인 (49행)</span> 을 누르면 검토 필요 행만 걸러서 보여 줍니다.</li>
+      <li><b>처리 상세 내역</b> — 수정·검토·삭제가 일어난 행 목록. 위쪽 탭(전체 처리 / 자동 수정 / 검토 필요 / 중복 제거)으로 거르고, <span class="btn-name">이전</span> <span class="btn-name">다음</span> 으로 페이지를 넘깁니다. <span class="btn-name">상세</span> 를 누르면 그 행으로 이동합니다.</li>
+    </ul>
+
+    <h3>[다시 실행해 결과 비교] 버튼</h3>
+    <p>파일 이름 줄 오른쪽의 <span class="btn-name">다시 실행해 결과 비교</span> 를 누르면 같은 파일을 한 번 더 읽어 정제한 뒤 결과를 비교합니다.</p>
+    <div class="box ok"><b>이렇게 나오면 정상</b><p>«같은 파일을 다시 읽어 한 번 더 정제했습니다. 정리본, 검토 사유, 변경 기록이 모두 이전 결과와 같습니다.»</p></div>
+    <div class="box note"><b>뜻</b><p>«같은 결과가 나온다»는 <b>흔들리지 않는다</b>는 뜻이지, <b>정답이 맞다</b>는 뜻은 아닙니다.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑦ -->
+  <section class="step" id="s7">
+    <h2><span class="num">7</span>데이터 검증 화면 사용하기</h2>
+    <figure>
+      <a href="img/04-validation.png" target="_blank" rel="noopener"><img src="img/04-validation.png" alt="데이터 검증 화면 — 표와 검토 상세 패널" width="1440" height="1000" loading="lazy"></a>
+      <figcaption>왼쪽은 표, 오른쪽은 행을 눌렀을 때 나오는 «검토 상세». (화면이 좁으면 상세는 표 아래에 나옵니다)</figcaption>
+    </figure>
+
+    <h3>표에서 색 읽기</h3>
+    <div class="table-wrap"><table>
+      <tr><th>모양</th><th>뜻</th></tr>
+      <tr><td>파란 칸 + 아래 작은 취소선 글자</td><td><span class="tag auto">자동 수정</span> 된 칸. 취소선 글자가 원래 값입니다 (예: <code>500,000</code> 아래 <s>500,000원</s>)</td></tr>
+      <tr><td>빨간 테두리 칸</td><td><span class="tag review">검토 필요</span> 칸. <b>(빈칸)</b>도 빨간 글자로 보입니다.</td></tr>
+      <tr><td>왼쪽 빨간 줄 + «검토 필요» / «충돌» 표시</td><td>검토가 필요한 행 / 같은 코드 충돌 행</td></tr>
+      <tr><td>회색 취소선 행 · «삭제됨»</td><td>완전 중복이라 삭제된 행 (정리본에는 없습니다)</td></tr>
+    </table></div>
+
+    <h3>필터와 검색</h3>
+    <figure>
+      <a href="img/04c-filters.png" target="_blank" rel="noopener"><img src="img/04c-filters.png" alt="데이터 검증 필터 막대" width="1117" height="120" loading="lazy"></a>
+    </figure>
+    <ul>
+      <li><b>검색</b> — 시술코드나 시술명으로 찾습니다.</li>
+      <li><b>상태 탭</b> — 전체 / 검토 필요 / 충돌 / 자동 수정 / 삭제된 행 / 정상</li>
+      <li><b>오류 유형</b> — 규칙 하나를 골라 그 규칙에 해당하는 행만 봅니다 (예: REV-06 가격 이상치).</li>
+      <li><b>보기</b> — «정리본 + 변경 표시»(기본) / «원본 값» / «정리본 값»</li>
+      <li>오른쪽 <span class="btn-name">↺</span> 버튼 — 필터를 처음 상태로 되돌립니다.</li>
+    </ul>
+
+    <h3>상세 패널 열기</h3>
+    <ol class="steps">
+      <li>표에서 행을 누릅니다.</li>
+      <li>«검토 상세»에서 시술 정보 · 시술 코드 · 원본 엑셀 행 · 적용 규칙을 봅니다.</li>
+      <li><b>검토 사유</b>(규칙 ID + 이유)와 <b>자동 수정</b>(바뀌기 전 → 바뀐 뒤)을 확인합니다.</li>
+      <li>맨 아래 <b>값 비교</b> 표에서 10개 칸의 원본과 정리본을 나란히 봅니다. 바뀐 칸은 파랗게 표시됩니다.</li>
+    </ol>
+    <figure class="narrow">
+      <a href="img/04b-detail.png" target="_blank" rel="noopener"><img src="img/04b-detail.png" alt="검토 상세 패널" width="375" height="892" loading="lazy"></a>
+      <figcaption>원본 43행: 정상가격은 자동 수정(500,000원 → 500,000), 이벤트가격 0은 검토 필요(REV-04)</figcaption>
+    </figure>
+
+    <h3>이전 / 다음 검토 행</h3>
+    <p>표 아래 <span class="btn-name">이전 검토 행</span> <span class="btn-name">다음 검토 행</span> 으로 검토가 필요한 행만 차례로 넘겨 봅니다. 가운데 숫자(예: <b>10 / 49</b>)는 지금 위치입니다.</p>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑧ -->
+  <section class="step" id="s8">
+    <h2><span class="num">8</span>정제 규칙 이해하기</h2>
+    <div class="table-wrap"><table>
+      <tr><th>처리 방식</th><th class="n">규칙 수</th></tr>
+      <tr><td><span class="tag auto">자동 수정</span></td><td class="n">8</td></tr>
+      <tr><td><span class="tag review">검토 표시</span></td><td class="n">11</td></tr>
+      <tr><td><span class="tag keep">그대로 유지</span></td><td class="n">1</td></tr>
+      <tr><td><b>합계</b></td><td class="n"><b>20</b></td></tr>
+    </table></div>
+    <figure>
+      <a href="img/05-rules-list.png" target="_blank" rel="noopener"><img src="img/05-rules-list.png" alt="정제 규칙 목록" width="961" height="760" loading="lazy"></a>
+      <figcaption>규칙은 실행 순서(단계)대로 묶여 있고, 오른쪽에 실제 적용 건수가 나옵니다.</figcaption>
+    </figure>
+    <h3>규칙의 이유 · 판단 기준 보기</h3>
+    <p>규칙 줄을 누르면 펼쳐집니다. <b>처리 방식 · 적용 컬럼 · 처리 이유 · 판단 기준 · 진단 예상 · 실제 적용</b>을 볼 수 있습니다.</p>
+    <figure>
+      <a href="img/05b-rules-detail.png" target="_blank" rel="noopener"><img src="img/05b-rules-detail.png" alt="REV-06 가격 이상치 규칙을 펼친 모습" width="961" height="605" loading="lazy"></a>
+      <figcaption>REV-06 가격 이상치를 펼친 모습 — 판단 기준과 임시 기준 안내가 함께 나옵니다.</figcaption>
+    </figure>
+    <div class="box warn"><b>규칙은 화면에서 바꿀 수 없습니다</b><p>이 화면은 «보기 전용»입니다. 규칙을 바꾸려면 서비스 운영자가 규칙 파일을 고쳐서 다시 배포해야 합니다.</p></div>
+
+    <h3>규칙 20개 한눈에</h3>
+    <div class="table-wrap"><table>
+      <tr><th>ID</th><th>이름</th><th>처리</th></tr>
+      <tr><td><code>DUP-01</code></td><td>완전 중복 행 제거</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-01</code></td><td>텍스트 금액을 숫자로 변환</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-02</code></td><td>시술명·시술부위 앞뒤 공백 제거</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-03</code></td><td>날짜를 YYYY-MM-DD로 통일</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-04</code></td><td>시술횟수 '숫자 회' 공백 제거</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-05</code></td><td>시술횟수 '숫자번'을 '숫자회'로</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-06</code></td><td>시술횟수 숫자만 있는 값에 '회' 붙이기</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>FMT-07</code></td><td>시술분류를 표준 명칭으로 통일</td><td><span class="tag auto">자동 수정</span></td></tr>
+      <tr><td><code>REV-01</code></td><td>시술횟수 '회권' 표기 검토</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-02</code></td><td>표준 목록에 없는 시술분류 검토</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-03</code></td><td>빈칸 검토</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-04</code></td><td>0 이하 가격 검토</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-05</code></td><td>이벤트가격이 정상가격보다 큼</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-06</code></td><td>가격 이상치 (임시 기준)</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-07</code></td><td>이벤트종료일이 시작일보다 빠름</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-08</code></td><td>시술횟수 범위 밖 값 (1~10회 밖)</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-09</code></td><td>시술명·시술부위 띄어쓰기 불일치</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>REV-10</code></td><td>같은 시술코드의 상품 정보 충돌</td><td><span class="tag review">검토 표시</span> <span class="tag conflict">충돌</span></td></tr>
+      <tr><td><code>REV-11</code></td><td>같은 시술코드, 상품 정보는 같고 다른 값이 다름</td><td><span class="tag review">검토 표시</span></td></tr>
+      <tr><td><code>KEEP-01</code></td><td>다른 시술코드는 병합하지 않음</td><td><span class="tag keep">그대로 유지</span></td></tr>
+    </table></div>
+    <p>시술분류의 표준 이름(FMT-07 · REV-02 기준): 필러 · 스킨부스터 · 지방흡입 · 보톡스 · 리프팅 · 레이저 시술 · 피부관리 · 눈성형 · 기타 미용 시술</p>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑨ -->
+  <section class="step" id="s9">
+    <h2><span class="num">9</span>변경 기록 확인하기</h2>
+    <figure>
+      <a href="img/06-history.png" target="_blank" rel="noopener"><img src="img/06-history.png" alt="변경 기록 · 다운로드 화면" width="1280" height="900" loading="lazy"></a>
+      <figcaption>「변경 기록」 화면 — 위쪽은 다운로드 카드 3개, 아래는 변경 기록 표</figcaption>
+    </figure>
+    <h3>표의 칸</h3>
+    <div class="table-wrap"><table>
+      <tr><th>칸</th><th>알 수 있는 것</th></tr>
+      <tr><td><code>원본_엑셀행번호</code></td><td>처음 올린 엑셀의 실제 행 번호 (머리글이 1행)</td></tr>
+      <tr><td><code>데이터순번</code></td><td>머리글을 뺀 순번 (= 원본_엑셀행번호 − 1)</td></tr>
+      <tr><td><code>시술코드</code></td><td>어떤 시술인지</td></tr>
+      <tr><td><code>변경컬럼</code></td><td>어느 칸인지. 행 삭제는 «(행 전체)»</td></tr>
+      <tr><td><code>변경전값</code> · <code>변경후값</code></td><td>무엇이 무엇으로 바뀌었는지. 검토 표시는 변경후값이 «(변경 없음)», 행 삭제는 «(삭제)»</td></tr>
+      <tr><td><code>처리방식</code></td><td>자동 수정 / 검토 표시 / 자동 수정(행 삭제)</td></tr>
+      <tr><td><code>처리이유</code></td><td>왜 고쳤는지, 또는 검토가 필요한 이유</td></tr>
+      <tr><td><code>규칙ID</code></td><td>적용된 규칙 (⑧의 표에서 찾을 수 있습니다)</td></tr>
+    </table></div>
+    <h3>필터</h3>
+    <p>표 오른쪽 위 탭으로 <b>전체 / 자동 수정 / 검토 표시 / 행 삭제</b>만 골라 봅니다. (목업 예시: 전체 81 · 자동 수정 20 · 검토 표시 58 · 행 삭제 3)</p>
+    <p>맨 아래 «제거된 중복 행» 표에는 지운 행과, 그 대신 남긴 행의 번호가 나옵니다.</p>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑩ -->
+  <section class="step" id="s10">
+    <h2><span class="num">10</span>정리본 다운로드 · 다시 올리기</h2>
+    <h3>내려받을 수 있는 파일 3가지 (모두 엑셀 .xlsx)</h3>
+    <div class="table-wrap"><table>
+      <tr><th>파일</th><th>버튼 위치</th><th>파일 이름 예</th><th>내용</th></tr>
+      <tr><td><b>정리본</b></td><td>위쪽 <span class="btn-name">정리본 엑셀 다운로드</span>, 대시보드 <span class="btn-name">정리본 다운로드 (.xlsx)</span>, 데이터 검증 <span class="btn-name">정리본 다운로드</span>, 변경 기록 <span class="btn-name">정리본 내려받기</span></td><td><code>병의원수가표_정리본_2026-11-15.xlsx</code></td><td>시트 3개: <b>정리본</b> · <b>변경기록</b> · <b>제거된_중복행</b></td></tr>
+      <tr><td><b>변경 기록</b></td><td>대시보드 <span class="btn-name">변경 기록 다운로드</span>, 변경 기록 <span class="btn-name">변경 기록 내려받기</span></td><td><code>…_변경기록_날짜.xlsx</code></td><td>⑨의 표와 같은 내용</td></tr>
+      <tr><td><b>제거된 중복 행</b></td><td>변경 기록 <span class="btn-name">제거된 중복 행 내려받기</span></td><td><code>…_제거된중복행_날짜.xlsx</code></td><td>지운 행과 남긴 행 번호</td></tr>
+    </table></div>
+    <p>파일 이름은 «올린 파일 이름_종류_오늘 날짜.xlsx»로 만들어지고, 브라우저의 다운로드 폴더에 저장됩니다. <b>원본 파일은 바뀌지 않습니다.</b></p>
+
+    <h3>정리본에 더해지는 칸</h3>
+    <div class="table-wrap"><table>
+      <tr><th>칸</th><th>내용</th></tr>
+      <tr><td><code>_검토상태</code></td><td><b>정상</b> / <b>검토 필요</b> / <b>충돌</b></td></tr>
+      <tr><td><code>_검토사유</code></td><td>규칙 ID와 이유. 여러 개면 <code>;</code>로 이어집니다. 예: <code>[REV-04] 정상가격이 0 이하; [REV-05] 이벤트가격이 정상가격보다 큼</code></td></tr>
+      <tr><td><code>_원본_엑셀행번호</code></td><td>처음 올린 엑셀의 행 번호</td></tr>
+    </table></div>
+
+    <h3>검토한 뒤 다시 올리기</h3>
+    <ol class="steps">
+      <li>정리본을 엑셀로 열어 <code>_검토상태</code>가 «검토 필요» · «충돌»인 행을 확인하고 고칩니다.</li>
+      <li><b>첫 번째 시트(정리본)</b>와 <code>_원본_엑셀행번호</code> 칸은 그대로 둔 채 .xlsx로 저장합니다.</li>
+      <li>PriceGuard의 「파일 업로드」에 다시 올립니다.</li>
+    </ol>
+    <div class="box ok"><b>이렇게 나오면 성공</b>
+      <p>«정리본 파일입니다. "_원본_엑셀행번호" 컬럼의 원본 행 번호 ○개를 이어받아, 변경 기록과 검토 사유에 처음 원본의 행 번호를 씁니다.» — 변경 기록과 검토 사유가 처음 원본의 행 번호로 이어집니다. (시트가 3개라 «첫 번째 시트("정리본")만 검사합니다» 안내도 함께 나옵니다.)</p></div>
+    <div class="box note"><b>참고</b>
+      <ul>
+        <li>정리본에 행을 새로 더하면 그 행에는 원본 행 번호가 없어서, 그 파일의 행 번호를 씁니다(화면에 안내가 나옵니다).</li>
+        <li>고치지 않은 값은 다시 올려도 같은 검토 사유가 나옵니다.</li>
+      </ul></div>
+    <div class="box unverified"><b><span class="tag unv">미검증</span></b>
+      <p>정리본을 <b>그대로</b> 다시 올렸을 때와 행 순서를 바꿔 올렸을 때 행 번호가 유지되는 것은 확인했습니다. 사람이 값을 고친 정리본으로는 직접 시험하지 않았습니다.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑪ -->
+  <section class="step" id="s11">
+    <h2><span class="num">11</span>정답 대조 (선택 기능)</h2>
+    <div class="box note"><b>정답 파일이 있을 때만 쓰는 기능입니다</b>
+      <p>«정답 CSV»는 «이 가격표가 원래 이랬어야 한다»를 담은 기준 파일입니다. 정리 결과가 얼마나 맞는지 재고 싶을 때 씁니다. 정답 파일이 없다면 이 단계는 건너뛰어도 됩니다.</p></div>
+    <h3>사용 방법</h3>
+    <ol class="steps">
+      <li>먼저 엑셀을 올려 정리본을 만듭니다 (⑤). 정리본이 없으면 «먼저 엑셀 파일을 올려 정리본을 만들어 주세요.»가 나옵니다.</li>
+      <li>왼쪽 메뉴에서 <b>정답 대조</b>를 누릅니다.</li>
+      <li>«기준 정답 (CSV)» 상자의 <span class="btn-name">파일 선택</span> 을 눌러 정답 <code>.csv</code>를 고릅니다.</li>
+    </ol>
+    <p>정답 CSV는 필수 컬럼 10개와 같은 이름의 머리글이 있어야 합니다. 한글 인코딩은 UTF-8과 CP949(한글 Windows 엑셀의 CSV) 모두 읽습니다.</p>
+    <figure>
+      <a href="img/07-benchmark.png" target="_blank" rel="noopener"><img src="img/07-benchmark.png" alt="정답 대조 결과 카드와 계산 기준" width="961" height="522" loading="lazy"></a>
+      <figcaption>정답 대조 결과(목업 데이터) — 결과 카드 4개와 «계산 기준»</figcaption>
+    </figure>
+    <h3>일치율 계산 기준</h3>
+    <div class="table-wrap"><table>
+      <tr><th>용어</th><th>뜻</th><th class="n">목업 예시</th></tr>
+      <tr><td>1:1 대응</td><td>시술코드(또는 원본 행 번호)가 정리본과 정답에 <b>각각 한 번씩만</b> 있는 행</td><td class="n">193행</td></tr>
+      <tr><td>일치</td><td>1:1 대응 행 중 10개 칸이 모두 같은 행</td><td class="n">158행</td></tr>
+      <tr><td>불일치</td><td>1:1 대응 행 중 한 칸 이상 다른 행</td><td class="n">35행</td></tr>
+      <tr><td>대응 보류</td><td>같은 키가 어느 한쪽에 두 번 이상 있어 짝을 정할 수 없는 경우</td><td class="n">7개 코드 (정리본 14행)</td></tr>
+      <tr><td><b>일치율</b></td><td><b>일치 ÷ 1:1 대응 행</b></td><td class="n"><b>81.9%</b></td></tr>
+    </table></div>
+    <h3>대응 보류란? — 왜 임의로 연결하지 않나</h3>
+    <p>같은 시술코드가 정리본에 두 행 있으면, 둘 중 어느 행을 정답과 비교해야 하는지 프로그램이 알 수 없습니다. 첫 번째 행을 아무렇게나 골라 비교하면 실제보다 «일치»가 많게 셀 수 있습니다. 그래서 PriceGuard는 <b>짝을 고르지 않고 «대응 보류»로 따로 세며</b>, 일치율 계산에서 뺍니다. 대응 보류 행은 지우거나 고치지 않습니다.</p>
+    <figure>
+      <a href="img/07b-benchmark-tabs.png" target="_blank" rel="noopener"><img src="img/07b-benchmark-tabs.png" alt="정답 대조 결과 탭" width="961" height="124" loading="lazy"></a>
+      <figcaption>탭: 1:1 대응 전체 · 불일치 · 검토 표시됨 · 표시 못함 · 완전 일치 · 대응 보류. «차이 강조 표시»로 다른 값을 강조합니다.</figcaption>
+    </figure>
+    <ul>
+      <li><b>검토 표시됨</b> — 정답과 다른 행 중 PriceGuard가 이미 «검토 필요»로 표시한 행</li>
+      <li><b>표시 못함</b> — 정답과 다른데 PriceGuard가 표시하지 못한 행 (정리기가 놓친 차이)</li>
+      <li><b>대응 보류</b> 탭 — 같은 코드에 속한 정리본 행과 정답 행을 모두 함께 보여 줍니다.</li>
+    </ul>
+    <div class="box note"><b>참고</b><p>정답 파일은 이 브라우저에서만 읽고 저장하거나 보내지 않습니다. 새 엑셀을 올리면 대조 결과는 지워집니다.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑫ -->
+  <section class="step" id="s12">
+    <h2><span class="num">12</span>내 파일이 밖으로 나가지 않는 이유</h2>
+    <div class="split2">
+      <div>
+        <h4>인터넷(Vercel)에서 내려받는 것</h4>
+        <p>PriceGuard 화면을 그리는 <b>프로그램 파일</b>입니다. 누구에게나 같은 파일입니다.</p>
+        <ul>
+          <li>화면 파일 (index.html, style.css, app.js, clean.js)</li>
+          <li>엑셀 처리 도구 (SheetJS) · 글꼴 · 로고</li>
+          <li>정제 규칙 파일 (<code>rules/병의원수가표.json</code>)</li>
+        </ul>
+      </div>
+      <div>
+        <h4>내 브라우저 안에서만 처리하는 것</h4>
+        <p>내가 고른 <b>엑셀 · 정답 CSV의 내용</b>입니다.</p>
+        <ul>
+          <li>파일 읽기, 정제, 검토 표시</li>
+          <li>정리본 · 변경 기록 엑셀 만들기 (내 컴퓨터에서 바로 저장)</li>
+        </ul>
+        <p>현재 구현에는 업로드한 파일 내용을 서버로 보내는 기능이 없습니다.</p>
+      </div>
+    </div>
+    <h3>직접 확인하는 방법 (Chrome 기준, 1분)</h3>
+    <ol class="steps">
+      <li>PriceGuard 화면에서 <kbd>F12</kbd> 를 누릅니다. 개발자 도구가 열립니다.</li>
+      <li>위쪽 탭에서 <b>Network</b>(네트워크)를 누르고, 🚫 모양 버튼으로 기록을 지웁니다.</li>
+      <li>엑셀 파일을 올리고, 정리본을 내려받아 봅니다.</li>
+      <li>새로 생긴 줄을 봅니다. <b>외부 주소로 가는 요청이 없고, 파일을 보내는(POST) 요청이 없으면</b> 내용이 밖으로 나가지 않은 것입니다.</li>
+    </ol>
+    <div class="box note"><b>참고</b><p>페이지를 처음 열거나 새로 고칠 때는 위 «인터넷에서 내려받는 것»들이 <code>priceguard-cjy3363-9965.vercel.app</code> 주소의 GET 요청으로 보입니다. 이것은 화면을 받아 오는 요청입니다. 2026-11-15 확인 때는 엑셀을 올린 뒤에 외부 주소 요청과 POST 요청이 0건이었습니다.</p></div>
+    <div class="box warn"><b>보장 범위</b><p>이 설명은 현재 PriceGuard 코드와 2026-11-15 확인 결과에 대한 것입니다. 사용하는 컴퓨터 · 브라우저 확장 프로그램 · 회사 네트워크 같은 환경까지 보장하지는 않습니다. 민감한 실제 데이터를 다룰 때는 소속 기관의 보안 규정을 먼저 따르세요.</p></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- ⑬ -->
+  <section class="step" id="s13">
+    <h2><span class="num">13</span>자주 발생하는 문제</h2>
+    <p>화면 맨 위 빨간 상자에 나온 문구를 그대로 복사해 두면 문제를 찾기 쉽습니다.</p>
+    <div class="table-wrap"><table>
+      <tr><th>상황 / 화면 문구</th><th>원인</th><th>해 볼 것</th></tr>
+      <tr><td>«"파일이름"은(는) 지원하지 않는 파일 형식입니다. 엑셀 파일(.xlsx, .xls, .xlsm)만 올릴 수 있습니다.»</td><td>CSV 등 다른 형식</td><td>엑셀에서 «다른 이름으로 저장 → Excel 통합 문서(.xlsx)»로 저장해 다시 올립니다.</td></tr>
+      <tr><td>«파일을 읽지 못했습니다: 필수 컬럼이 없습니다: … (머리글 1행 기준)»</td><td>필수 컬럼 이름이 다르거나 빠짐, 또는 머리글이 1행이 아님</td><td>②의 10개 이름과 똑같은지, 머리글이 1행인지 확인합니다. 문구에 나온 컬럼이 빠진 컬럼입니다.</td></tr>
+      <tr><td>오른쪽 위 배지가 «규칙 파일 필요», 안내 «규칙 파일을 자동으로 불러오지 못했습니다.» / 올릴 때 «규칙 파일이 아직 준비되지 않았습니다. 규칙 파일을 먼저 불러와 주세요.»</td><td>규칙 파일을 받아 오지 못함</td><td>인터넷 연결을 확인하고 새로 고칩니다. 내 컴퓨터에서 index.html을 더블클릭해 연 경우는 부록 A의 «더블클릭으로 열었을 때»를 보세요.</td></tr>
+      <tr><td>데이터가 첫 번째 시트가 아닌 곳에 있음</td><td>첫 번째 시트만 검사</td><td>엑셀에서 데이터가 있는 시트를 맨 앞으로 옮겨 저장합니다. 첫 시트가 비어 있으면 «시트 "…"이(가) 비어 있습니다.»가 나옵니다.</td></tr>
+      <tr><td>정제 후에도 «검토 필요»가 남아 있음</td><td><b>정상 동작</b>입니다. 정답을 알 수 없는 값은 추측해서 바꾸지 않습니다.</td><td>⑦에서 사유를 확인하고, ⑩처럼 정리본에서 고친 뒤 다시 올립니다.</td></tr>
+      <tr><td>정답 대조: «정답 파일은 CSV(.csv)만 선택할 수 있습니다.»</td><td>CSV가 아닌 파일</td><td>정답 파일을 CSV로 저장해 고릅니다.</td></tr>
+      <tr><td>정답 대조: «정답 파일에 "시술코드" 컬럼이나 원본 행 번호 컬럼이 없어 행을 맞출 수 없습니다.» / «정답 파일에서 비교할 컬럼을 찾지 못했습니다. 머리글을 확인해 주세요.»</td><td>정답 CSV의 머리글이 다름</td><td>정답 CSV 1행에 필수 컬럼 이름이 있는지 확인합니다.</td></tr>
+      <tr><td>다운로드 버튼이 흐리게 꺼져 있음</td><td>아직 파일을 올리지 않음</td><td>⑤를 먼저 합니다.</td></tr>
+      <tr><td>다운로드가 안 됨 / «파일을 만들지 못했습니다: …»</td><td>브라우저가 다운로드를 막았을 수 있음 <span class="tag unv">미검증</span></td><td>브라우저의 다운로드 허용 설정과 다운로드 폴더를 확인합니다. 문구가 나오면 그대로 복사해 문의합니다.</td></tr>
+      <tr><td>바뀐 내용이 안 보이고 예전 화면 그대로임</td><td>브라우저가 예전 파일을 기억함</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac: <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>)로 새로 고칩니다.</td></tr>
+      <tr><td>큰 파일에서 화면이 느리거나 멈춤</td><td>모든 처리를 브라우저에서 함 <span class="tag unv">미검증</span></td><td>어느 크기부터 느려지는지 시험하지 않았습니다(시험한 파일은 210행). 파일을 나눠 올리면 나뉜 파일 사이의 중복·충돌은 찾지 못하니 주의하세요.</td></tr>
+    </table></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- 부록 A -->
+  <section class="step" id="appA">
+    <h2><span class="num alt">A</span>부록 A. 내 컴퓨터에서 실행하기</h2>
+    <p>인터넷 주소를 쓸 수 없을 때(예: 회사 규정)만 따라 하세요. <b>Windows 기준</b>이며, 2026-11-15에 Windows + Python 3.13 + Chrome으로 아래 순서를 실제로 따라 해 확인했습니다.</p>
+    <div class="box unverified"><b><span class="tag unv">미검증</span> Mac</b><p>Mac에서는 직접 시험하지 않았습니다. Mac은 명령의 <code>python</code>을 <code>python3</code>로 바꿔야 할 수 있습니다.</p></div>
+
+    <ol class="steps">
+      <li><b>GitHub 저장소가 공개인지 확인</b> — <a href="https://github.com/cjy3363-art/priceguard" target="_blank" rel="noopener">github.com/cjy3363-art/priceguard</a> 가 로그인 없이 열리면 공개입니다. 2026-11-15 기준 <b>공개</b>입니다. 열리지 않으면(비공개로 바뀐 경우) ZIP을 받을 수 없으니 운영자에게 파일을 받으세요.</li>
+      <li><b>ZIP 받기</b> — 저장소 페이지의 초록색 <span class="btn-name">&lt;&gt; Code</span> → <b>Download ZIP</b></li>
+      <li><b>압축 풀기</b> — 받은 <code>priceguard-main.zip</code>에 마우스 오른쪽 → <b>모두 압축 풀기</b> → <b>압축 풀기</b>. 압축을 반드시 풀어야 합니다.</li>
+      <li><b><code>deploy</code> 폴더 찾기</b> — 실행할 파일은 <code>deploy</code> 폴더 안에 있습니다.
+<pre><code>📁 priceguard-main
+  📁 deploy        ← 여기서 실행합니다
+     📄 index.html
+     📄 app.js · clean.js · style.css · vercel.json
+     📁 lib · rules · assets
+  📁 scripts       (배포 폴더를 만드는 도구 · 쓰지 않음)
+  📄 .gitignore</code></pre></li>
+      <li><b>Python 설치 확인</b> — Windows 키 → <code>cmd</code> → Enter. 검은 창에 아래를 붙여 넣고 Enter.
+<pre><code>python --version</code></pre>
+        <code>Python 3.</code>으로 시작하면 다음 단계로. 없으면 python.org/downloads에서 내려받아 설치하고, 첫 화면 맨 아래 <b>Add python.exe to PATH</b>에 꼭 체크한 뒤 <b>Install Now</b>. 설치 후에는 검은 창을 닫고 새로 엽니다. <span class="tag unv">설치 절차는 이번에 다시 설치해 보지 않음</span></li>
+      <li><b><code>deploy</code> 폴더에서 검은 창 열기</b> — 탐색기로 <code>deploy</code> 폴더를 열고(index.html이 보이는 곳), 위쪽 주소 줄을 한 번 클릭한 뒤 <code>cmd</code> 입력 → Enter.</li>
+      <li><b>로컬 서버 실행</b> — 아래 명령을 붙여 넣고 Enter.
+<pre><code>python -m http.server 8000 --bind 127.0.0.1</code></pre>
+        <div class="box ok"><b>이렇게 나오면 성공</b><p><code>Serving HTTP on 127.0.0.1 port 8000 (http://127.0.0.1:8000/) ...</code> 가 뜨고 커서가 깜빡입니다. 검은 창은 쓰는 동안 닫지 마세요. <code>127.0.0.1</code>은 내 컴퓨터에서만 열린다는 뜻입니다.</p></div></li>
+      <li><b>브라우저에서 접속</b> — Chrome 주소 줄에 아래를 입력합니다. (https가 아니라 http)
+<pre><code>http://127.0.0.1:8000</code></pre>
+        온라인과 같은 PriceGuard 「파일 업로드」 화면과 «정제 규칙 20개 준비됨»이 보이면 성공입니다. 사용법은 ③~⑬과 같습니다.</li>
+      <li><b>사용 종료</b> — 검은 창을 클릭하고 <kbd>Ctrl</kbd>+<kbd>C</kbd>. 서버가 멈추면 검은 창과 브라우저 탭을 닫습니다. 다음에는 6~8번만 다시 하면 됩니다.</li>
+    </ol>
+
+    <h3>부록 A에서 막힐 때</h3>
+    <div class="table-wrap"><table>
+      <tr><th>상황</th><th>해 볼 것</th></tr>
+      <tr><td>«'python'은(는) 내부 또는 외부 명령… 아닙니다»</td><td>PATH 체크가 빠졌거나 설치 전에 연 검은 창입니다. 검은 창을 새로 열거나, <code>python</code> 대신 <code>py</code>로 실행해 봅니다: <code>py -m http.server 8000 --bind 127.0.0.1</code></td></tr>
+      <tr><td><code>python</code>을 치면 Microsoft Store가 열림</td><td>파이썬이 설치되지 않았다는 안내입니다. 5번대로 설치합니다.</td></tr>
+      <tr><td>«Address already in use» / 8000번 사용 중</td><td>명령의 <code>8000</code>을 <code>8001</code>로 바꾸고, 주소도 <code>http://127.0.0.1:8001</code>로 엽니다.</td></tr>
+      <tr><td>«사이트에 연결할 수 없음»</td><td>검은 창이 닫혔거나 서버가 꺼졌습니다 → 6·7번 다시. 주소를 <code>https</code>로 쳤다면 <code>http</code>로.</td></tr>
+      <tr><td>목록이 보이거나 «404»</td><td><code>deploy</code>가 아닌 폴더(예: <code>priceguard-main</code>)에서 서버를 켰습니다. <kbd>Ctrl</kbd>+<kbd>C</kbd>로 끄고 6번부터.</td></tr>
+      <tr><td id="dblclick">더블클릭으로 열었을 때 (주소가 <code>file:///…</code>)</td><td>브라우저 보안 때문에 규칙 파일을 자동으로 못 읽어 «규칙 파일을 자동으로 불러오지 못했습니다.» 상자가 나옵니다. 상자의 <span class="btn-name">규칙 파일 선택</span> 으로 <code>deploy/rules/병의원수가표.json</code>을 고르면 쓸 수 있습니다(Windows Chrome에서 확인). 가능하면 위의 서버 방식을 쓰세요.</td></tr>
+    </table></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  <!-- 부록 B -->
+  <section class="step" id="appB">
+    <h2><span class="num alt">B</span>부록 B. 용어 풀이</h2>
+    <div class="table-wrap"><table>
+      <tr><th>용어</th><th>쉽게 말하면</th></tr>
+      <tr><td><b>자동 수정</b></td><td>결과가 확실한 형식만 PriceGuard가 고친 것. 예: <code>500,000원</code> → <code>500000</code></td></tr>
+      <tr><td><b>검토 필요</b></td><td>틀린 것 같지만 정답을 몰라서 값은 그대로 두고 «사람이 봐 주세요»라고 표시한 것</td></tr>
+      <tr><td><b>충돌</b></td><td>같은 시술코드인데 내용이 다른 행들. 어느 쪽이 맞는지 몰라 둘 다 남겨 둠</td></tr>
+      <tr><td><b>중복 제거</b></td><td>10개 칸이 완전히 같은 행은 먼저 나온 하나만 남기고 지운 것</td></tr>
+      <tr><td><b>정제 규칙</b></td><td>무엇을 어떻게 검사하고 고칠지 미리 정해 둔 약속 20개</td></tr>
+      <tr><td><b>변경 기록</b></td><td>어느 행의 어느 칸이 왜, 무엇에서 무엇으로 바뀌었는지(또는 왜 검토가 필요한지) 적은 목록</td></tr>
+      <tr><td><b>원본 행 번호</b></td><td>처음 올린 엑셀에서 그 행이 몇 번째 줄이었는지 (머리글이 1행). 정리본을 다시 올려도 이 번호를 이어서 씀</td></tr>
+      <tr><td><b>정답 대조</b></td><td>«원래 이랬어야 하는» 정답 파일과 정리본을 비교해 얼마나 맞는지 재는 기능 (선택)</td></tr>
+      <tr><td><b>대응 보류</b></td><td>같은 코드가 여러 번 있어 정답의 어느 행과 짝지을지 정할 수 없어서, 일부러 비교하지 않고 따로 세어 둔 것</td></tr>
+      <tr><td><b>다시 실행해 결과 비교</b></td><td>같은 파일을 한 번 더 정제해서 결과가 똑같이 나오는지 확인하는 버튼. «흔들리지 않는다»는 뜻이지 «정답이다»는 뜻은 아님</td></tr>
+    </table></div>
+    <a class="back" href="#">↑ 맨 위로</a>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <p>작성 기준: 2026-11-15 · PriceGuard 정제 규칙 v1.0 (승인 2026-11-15)</p>
+  <p>가이드의 예시 수치(210행 → 207행, 자동 수정 20칸, 검토 필요 49행, 중복 제거 3행, 정답 대조 158/193)는 모두 목업(가상) 데이터 기준입니다.</p>
+  <p>서비스: <a href="https://priceguard-cjy3363-9965.vercel.app" target="_blank" rel="noopener">https://priceguard-cjy3363-9965.vercel.app</a></p>
+</footer>
+
+</body>
+</html>

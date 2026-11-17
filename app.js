@@ -20,6 +20,7 @@
           <div class="ai">${(c.ai || []).map(a => `<span>${esc(a)}</span>`).join("")}</div>
           ${c.url ? `<a class="go" href="${esc(c.url)}" target="_blank" rel="noopener">써 보기 →</a>`
                   : `<span class="go off">링크를 넣으십시오</span>`}
+          ${c.guide ? `<a class="go" href="${esc(c.guide)}">사용 가이드 →</a>` : ""}
         </div>
       </article>` : `
       <article class="card empty"><div class="noimg">${i + 1}주</div>
