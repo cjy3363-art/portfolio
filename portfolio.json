@@ -22,7 +22,11 @@
     {"week": 5, "title": "지표 사전",
      "line": "지표마다 정의서 한 장(분자·분모·기간·거르기·제외·최소 표본, 버린 정의와 이유)을 두고, 정의서대로만 계산한 값을 카드·월별 추이·대시보드로 보여 주는 웹앱",
      "judgment": "",
-     "ai": ["Claude Code"], "url": "https://metric-dictionary-psi.vercel.app/", "img": "img/w5-지표 대시보드.png"}
+     "ai": ["Claude Code"], "url": "https://metric-dictionary-psi.vercel.app/", "img": "img/w5-지표 대시보드.png"},
+    {"week": 6, "title": "LUMEA BEAUTY BI — 화장품 브랜드 KPI 대시보드",
+     "line": "가상 화장품 브랜드의 33개 테이블·210만 행 데이터를 정제하고 공식 KPI 14개를 정의서로 고정한 뒤, 경영 성과부터 ERD까지 11개 메뉴의 BI 대시보드와 지표 사전으로 보여 주는 웹앱",
+     "judgment": "KPI 값은 정의서 SQL로만 계산하고, 데이터가 없거나 기준을 정할 수 없는 항목(배송 완료율·경쟁 가격 지수 등)은 억지로 계산하지 않고 화면에 사유를 남겼다. 지원하지 않는 필터는 숫자를 바꾸지 않고 '적용 불가'로 표시했고, 화면 컴포넌트 119개 중 109개를 공식 계산 결과와 대조해 검증했다. 첫 로딩 164초의 원인이 순차 SQL 1,464회라는 것을 측정으로 확인한 뒤 사전 집계로 바꿔 첫 화면 1.5초, 지표 사전 1초 미만으로 줄였다. 다만 필터를 처음 쓸 때는 브라우저 안 DuckDB를 시작하느라 약 10초가 걸리고, 모든 데이터는 가상 합성 데이터다.",
+     "ai": ["Claude Code", "Google Stitch"], "url": "https://my-metrics-2-jet.vercel.app/", "img": "img/w6-lumea-bi.png"}
   ],
   "proposal": null
 }
